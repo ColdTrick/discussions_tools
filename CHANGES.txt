@@ -1,6 +1,11 @@
 Version history
 ===============
 
+3.0 (2017-01-26):
+
+- changed: increased Elgg version requirement to 2.3
+- fixed: brought resource discussion/view inline with core
+
 2.0 (2016-05-26):
 
 - added: Dutch translation
