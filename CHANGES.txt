@@ -1,6 +1,10 @@
 Version history
 ===============
 
+3.0.1 (2017-02-27):
+
+- changed: registration of group_form_topics widget now in hook
+
 3.0 (2017-01-26):
 
 - changed: increased Elgg version requirement to 2.3
