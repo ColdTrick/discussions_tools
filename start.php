@@ -21,7 +21,4 @@ function discussions_tools_init() {
 	elgg_register_plugin_hook_handler('entity:url', 'object', '\ColdTrick\DiscussionsTools\WidgetManager::widgetURL');
 	elgg_register_plugin_hook_handler('group_tool_widgets', 'widget_manager', '\ColdTrick\DiscussionsTools\WidgetManager::groupToolWidgets');
 	elgg_register_plugin_hook_handler('handlers', 'widgets', '\ColdTrick\DiscussionsTools\Widgets::registerDiscussionWidget');
-	
-	// register actions
-	elgg_register_action('discussions/toggle_status', dirname(__FILE__) . '/actions/discussions/toggle_status.php');
 }
