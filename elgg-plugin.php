@@ -1,6 +1,9 @@
 <?php
 
+use ColdTrick\DiscussionsTools\Bootstrap;
+
 return [
+	'bootstrap' => Bootstrap::class,
 	'actions' => [
 		'discussions/toggle_status' => [],
 	],
