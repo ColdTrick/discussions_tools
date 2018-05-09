@@ -7,43 +7,43 @@ class EntityMenu {
 	/**
 	 * Add quick status change items
 	 *
-	 * @param string          $hook         the name of the hook
-	 * @param string          $type         the type of the hook
-	 * @param \ElggMenuItem[] $return_value current return vaue
-	 * @param array           $params       supplied params
+	 * @param \Elgg\Hook $hook 'register', 'menu:entity'
 	 *
 	 * @return void|\ElggMenuItem[]
 	 */
-	public static function discussionStatus($hook, $type, $return_value, $params) {
+	public static function discussionStatus(\Elgg\Hook $hook) {
 		
-		$entity = elgg_extract('entity', $params);
-		if (!elgg_instanceof($entity, 'object', 'discussion')) {
+		$entity = $hook->getEntityParam();
+		if (!$entity instanceof \ElggDiscussion || !$entity->canEdit()) {
 			return;
 		}
 		
-		if (!$entity->canEdit()) {
-			return;
-		}
-		
-		// load js
-		elgg_require_js('discussions_tools/status_toggle');
+		$return_value = $hook->getValue();
 		
 		// add menu items
 		$return_value[] = \ElggMenuItem::factory([
 			'name' => 'status_change_open',
 			'text' => elgg_echo('open'),
+			'icon' => 'unlock',
 			'confirm' => elgg_echo('discussions_tools:discussion:confirm:open'),
-			'href' => "action/discussions/toggle_status?guid={$entity->getGUID()}",
+			'href' => elgg_generate_action_url('discussions/toggle_status', [
+				'guid' => $entity->guid,
+			]),
 			'priority' => 200,
-			'item_class' => ($entity->status == 'closed') ? '' : 'hidden',
+			'item_class' => ($entity->status === 'closed') ? '' : 'hidden',
+			'data-toggle' => 'status-change-close',
 		]);
 		$return_value[] = \ElggMenuItem::factory([
 			'name' => 'status_change_close',
 			'text' => elgg_echo('close'),
+			'icon' => 'lock',
 			'confirm' => elgg_echo('discussions_tools:discussion:confirm:close'),
-			'href' => "action/discussions/toggle_status?guid={$entity->getGUID()}",
+			'href' => elgg_generate_action_url('discussions/toggle_status', [
+				'guid' => $entity->guid,
+			]),
 			'priority' => 201,
-			'item_class' => ($entity->status == 'closed') ? 'hidden' : '',
+			'item_class' => ($entity->status === 'closed') ? 'hidden' : '',
+			'data-toggle' => 'status-change-open',
 		]);
 		
 		return $return_value;

@@ -5,25 +5,20 @@
 
 $guid = (int) get_input('guid');
 if (empty($guid)) {
-	register_error(elgg_echo('error:missing_data'));
-	forward(REFERER);
+	return elgg_error_response(elgg_echo('error:missing_data'));
 }
 
-elgg_entity_gatekeeper($guid, 'object', 'discussion');
 $entity = get_entity($guid);
-if (!$entity->canEdit()) {
-	register_error(elgg_echo('actionunauthorized'));
-	forward(REFERER);
+if (!$entity instanceof ElggDiscussion || !$entity->canEdit()) {
+	return elgg_error_response(elgg_echo('actionunauthorized'));
 }
 
 if ($entity->status === 'closed') {
 	$entity->status = 'open';
 	
-	system_message(elgg_echo('discussions_tools:action:discussions:toggle_status:success:open'));
-} else {
-	$entity->status = 'closed';
-	
-	system_message(elgg_echo('discussions_tools:action:discussions:toggle_status:success:close'));
+	return elgg_ok_response('', elgg_echo('discussions_tools:action:discussions:toggle_status:success:open'));
 }
 
-forward(REFERER);
+$entity->status = 'closed';
+	
+return elgg_ok_response('', elgg_echo('discussions_tools:action:discussions:toggle_status:success:close'));

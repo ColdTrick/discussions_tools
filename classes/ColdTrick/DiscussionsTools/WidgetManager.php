@@ -7,22 +7,20 @@ class WidgetManager {
 	/**
 	 * Set the title URL for the discussions_tools widgets
 	 *
-	 * @param string $hook         the name of the hook
-	 * @param string $type         the type of the hook
-	 * @param string $return_value current return value
-	 * @param array  $params       supplied params
+	 * @param \Elgg\Hook $hook 'entity:url', 'object'
 	 *
 	 * @return void|string
 	 */
-	public static function widgetURL($hook, $type, $return_value, $params) {
+	public static function widgetURL(\Elgg\Hook $hook) {
 		
+		$return_value = $hook->getValue();
 		if (!empty($return_value)) {
 			// someone already set an url
 			return;
 		}
 		
-		$widget = elgg_extract('entity', $params);
-		if (!($widget instanceof \ElggWidget)) {
+		$widget = $hook->getEntityParam();
+		if (!$widget instanceof \ElggWidget) {
 			return;
 		}
 		
@@ -30,16 +28,20 @@ class WidgetManager {
 			case 'start_discussion':
 				$owner = $widget->getOwnerEntity();
 				if ($owner instanceof \ElggGroup) {
-					$return_value = "discussion/add/{$owner->getGUID()}";
+					$return_value = elgg_generate_url('add:object:discussion', [
+						'guid' => $owner->guid,
+					]);
 				}
 				break;
 			case 'discussion':
-				$return_value = 'discussion/all';
+				$return_value = elgg_generate_url('collection:object:discussion:all');
 				break;
 			case 'group_forum_topics':
 				$page_owner = elgg_get_page_owner_entity();
-				if (($page_owner instanceof \ElggGroup)) {
-					$return_value = "discussion/owner/{$page_owner->getGUID()}";
+				if ($page_owner instanceof \ElggGroup) {
+					$return_value = elgg_generate_url('collection:object:discussion:group', [
+						'guid' => $page_owner->guid,
+					]);
 				}
 				break;
 		}
@@ -50,26 +52,24 @@ class WidgetManager {
 	/**
 	 * Add or remove widgets based on the group tool option
 	 *
-	 * @param string $hook         the name of the hook
-	 * @param string $type         the type of the hook
-	 * @param array $return_value current return value
-	 * @param array  $params       supplied params
+	 * @param \Elgg\Hook $hook 'group_tool_widgets', 'widget_manager'
 	 *
 	 * @return void|array
 	 */
-	public static function groupToolWidgets($hook, $type, $return_value, $params) {
+	public static function groupToolWidgets(\Elgg\Hook $hook) {
 		
-		$entity = elgg_extract('entity', $params);
-		if (!($entity instanceof \ElggGroup)) {
+		$entity = $hook->getEntityParam();
+		if (!$entity instanceof \ElggGroup) {
 			return;
 		}
 		
+		$return_value = $hook->getValue();
 		if (!is_array($return_value)) {
 			return;
 		}
 		
 		// check different group tools for which we supply widgets
-		if ($entity->forum_enable === 'yes') {
+		if ($entity->isToolEnabled('forum')) {
 			$return_value['enable'][] = 'group_forum_topics';
 		} else {
 			$return_value['disable'][] = 'group_forum_topics';

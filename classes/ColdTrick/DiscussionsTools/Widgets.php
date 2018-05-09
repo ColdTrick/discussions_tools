@@ -9,28 +9,28 @@ class Widgets {
 	/**
 	 * Register the group_form_topics widget for groups
 	 *
-	 * @param string                   $hook         the name of the hook
-	 * @param string                   $type         the type of the hook
-	 * @param \Elgg\WidgetDefinition[] $return_value current return value
-	 * @param array                    $params       supplied params
+	 * @param \Elgg\Hook $hook 'handlers', 'widgets'
 	 *
 	 * @return void|\Elgg\WidgetDefinition[]
 	 */
-	public static function registerDiscussionWidget($hook, $type, $return_value, $params) {
+	public static function registerDiscussionWidget(\Elgg\Hook $hook) {
 		
-		if (elgg_extract('context', $params) !== 'groups') {
+		$context = $hook->getParam('context');
+		if ($context !== 'groups') {
 			return;
 		}
 		
-		$container = elgg_extract('container', $params);
-		if (($container instanceof \ElggGroup) && ($container->forum_enable === 'no')) {
+		$container = $hook->getParam('container');
+		if (!$container instanceof \ElggGroup || !$container->isToolEnabled('forum')) {
 			return;
 		}
+		
+		$return_value = $hook->getValue();
 		
 		$return_value[] = WidgetDefinition::factory([
 			'id' => 'group_forum_topics',
 			'name' => elgg_echo('discussion:group'),
-			'description' => elgg_echo('discussions_tools:widgets:group_forum_topics:description'),
+			'description' => elgg_echo('widgets:group_forum_topics:description'),
 			'context' => ['groups'],
 		]);
 		

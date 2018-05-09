@@ -3,6 +3,7 @@
  * quickly start a discussion
  */
 
+/* @var $widget ElggWidget */
 $widget = elgg_extract('entity', $vars);
 $embed = (bool) elgg_extract('embed', $vars, false);
 
@@ -23,7 +24,8 @@ $group_membership = $user->getGroups(['limit' => false]);
 if (empty($group_membership)) {
 	if (!$embed) {
 		// you must join a group in order to use this widget
-		$link_start = '<a href="' . elgg_get_site_url() . '/groups/all">';
+		$url = elgg_generate_url('collection:group:group:all');
+		$link_start = "<a href='{$url}'>";
 		$link_end = '</a>';
 	
 		$text = elgg_echo('discussions_tools:widgets:start_discussion:membership_required', [$link_start, $link_end]);
@@ -36,9 +38,9 @@ if (empty($group_membership)) {
 
 $owner = $widget->getOwnerEntity();
 $selected_group = ELGG_ENTITIES_ANY_VALUE;
-if (($owner instanceof ElggGroup) && ($owner->forum_enable !== 'no')) {
+if ($owner instanceof ElggGroup && $owner->isToolEnabled('forum')) {
 	// preselect the current group
-	$selected_group = $owner->getGUID();
+	$selected_group = $owner->guid;
 }
 
 $group_selection_options = [];
@@ -50,15 +52,16 @@ if (empty($selected_group)) {
 	$group_access_options['-1'] = '';
 }
 
+/* @var $group ElggGroup */
 foreach ($group_membership as $group) {
 	
 	// does the group have discussions disabled
-	if ($group->forum_enable === 'no') {
+	if (!$group->isToolEnabled('forum')) {
 		continue;
 	}
 	
-	$group_selection_options[$group->getGUID()] = $group->name;
-	$group_access_options[$group->group_acl] = $group->getGUID();
+	$group_selection_options[$group->guid] = $group->getDisplayName();
+	$group_access_options[$group->group_acl] = $group->guid;
 }
 
 if ((empty($selected_group) && (count($group_selection_options) === 1)) || (!empty($selected_group) && empty($group_selection_options))) {
@@ -76,7 +79,7 @@ natcasesort($group_selection_options);
 
 $form_vars = [
 	'id' => 'discussions-tools-start-discussion-widget-form',
-	'action' => 'action/discussion/save',
+	'action' => elgg_generate_action_url('discussion/save', [], false),
 ];
 $body_vars = [
 	'groups' => $group_selection_options,
@@ -85,5 +88,3 @@ $body_vars = [
 ];
 
 echo elgg_view_form('discussions_tools/quick_start', $form_vars, $body_vars);
-
-echo elgg_format_element('script', ['type' => 'text/javascript'], 'require(["discussions_tools/start_discussion"]);');

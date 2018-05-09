@@ -3,10 +3,11 @@
  * content of the discussions widget
  */
 
+/* @var $widget ElggWidget */
 $widget = elgg_extract('entity', $vars);
 $group = $widget->getOwnerEntity();
 	
-$topic_count = sanitise_int($widget->topic_count, false);
+$topic_count = (int) $widget->topic_count;
 if ($topic_count < 1) {
 	$topic_count = 4;
 }
@@ -14,7 +15,7 @@ if ($topic_count < 1) {
 $options = [
 	'type' => 'object',
 	'subtype' => 'discussion',
-	'container_guid' => $group->getGUID(),
+	'container_guid' => $group->guid,
 	'order_by' => 'e.last_action desc',
 	'limit' => $topic_count,
 	'full_view' => false,
@@ -33,7 +34,9 @@ if (empty($content)) {
 } else {
 	$content .= elgg_format_element('div', ['class' => 'elgg-widget-more'], elgg_view('output/url', [
 		'text' => elgg_echo('discussions_tools:widgets:discussion:more'),
-		'href' => "discussion/owner/{$group->getGUID()}",
+		'href' => elgg_generate_url('collection:object:discussion:group', [
+			'guid' => $group->guid,
+		]),
 		'is_trusted' => true,
 	]));
 }

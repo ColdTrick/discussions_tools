@@ -11,9 +11,12 @@ if (empty($quick_start_form_count)) {
 	$quick_start_form_count++;
 }
 
+elgg_require_js('discussions_tools/start_discussion');
+
 // show a button to expend the form
 echo elgg_view('output/url', [
 	'text' => elgg_echo('discussion:add'),
+	'icon' => 'plus',
 	'href' => "#discussions-tools-discussion-quick-start-wrapper-{$quick_start_form_count}",
 	'is_trusted' => true,
 	'rel' => 'toggle',
@@ -21,74 +24,63 @@ echo elgg_view('output/url', [
 ]);
 
 // start the form
-echo "<div id='discussions-tools-discussion-quick-start-wrapper-{$quick_start_form_count}' class='hidden'>";
+$form_data = '';
 
 // group selector
-echo '<div>';
-echo elgg_format_element('label', [
-	'for' => 'discussions-tools-discussion-quick-start-group',
-], elgg_echo('discussions_tools:forms:discussion:quick_start:group'));
-echo '<br />';
-echo elgg_view('input/select', [
+$form_data .= elgg_view_field([
+	'#type' => 'select',
+	'#label' => elgg_echo('discussions_tools:forms:discussion:quick_start:group'),
 	'name' => 'container_guid',
 	'options_values' => $group_selection_options,
 	'value' => $selected_group,
-	'id' => 'discussions-tools-discussion-quick-start-group',
 ]);
-echo '</div>';
 
 // hidden group access selector
-echo '<div class="hidden">';
-echo elgg_format_element('label', [
-	'for' => 'discussions-tools-discussion-quick-start-access_id',
-], elgg_echo('access'));
-echo '<br />';
-echo elgg_view('input/select', [
+$form_data .= elgg_view_field([
+	'#type' => 'select',
+	'#label' => elgg_echo('access'),
+	'#class' => 'hidden',
 	'name' => 'access_id',
 	'options_values' => $group_access_options,
-	'id' => 'discussions-tools-discussion-quick-start-access_id',
 ]);
-echo '</div>';
 
 // title
-echo '<div>';
-echo elgg_format_element('label', [
-	'for' => 'discussions-tools-discussion-quick-start-title',
-], elgg_echo('title'));
-echo elgg_view('input/text', [
+$form_data .= elgg_view_field([
+	'#type' => 'text',
+	'#label' => elgg_echo('title'),
 	'name' => 'title',
-	'id' => 'discussions-tools-discussion-quick-start-title',
 	'required' => true,
 ]);
-echo '</div>';
 
 // description
-echo '<div>';
-echo elgg_format_element('label', [
-	'for' => 'discussions-tools-discussion-quick-start-description',
-], elgg_echo('discussion:topic:description'));
-echo elgg_view('input/plaintext', [
+$form_data .= elgg_view_field([
+	'#type' => 'plaintext',
+	'#label' => elgg_echo('discussion:topic:description'),
 	'name' => 'description',
-	'id' => 'discussions-tools-discussion-quick-start-description',
 	'required' => true,
 ]);
-echo '</div>';
 
 // tags
-echo '<div>';
-echo elgg_format_element('label', [
-	'for' => 'discussions-tools-discussion-quick-start-tags',
-], elgg_echo('tags'));
-echo elgg_view('input/tags', [
+$form_data .= elgg_view_field([
+	'#type' => 'tags',
+	'#label' => elgg_echo('tags'),
 	'name' => 'tags',
-	'id' => 'discussions-tools-discussion-quick-start-tags',
 ]);
-echo '</div>';
 
 // buttons / footer
-echo '<div class="elgg-foot">';
-echo elgg_view('input/hidden', ['name' => 'status', 'value' => 'open']);
-echo elgg_view('input/submit', ['value' => elgg_echo('save')]);
-echo '</div>';
+$form_data .= elgg_view_field([
+	'#type' => 'hidden',
+	'name' => 'status',
+	'value' => 'open',
+]);
 
-echo '</div>'; // end wrapper
+$form_data .= elgg_format_element('div', ['class' => 'elgg-foot elgg-form-footer'], elgg_view_field([
+	'#type' => 'submit',
+	'value' => elgg_echo('save'),
+]));
+
+// render wrapper
+echo elgg_format_element('div', [
+	'id' => "discussions-tools-discussion-quick-start-wrapper-{$quick_start_form_count}",
+	'class' => 'hidden',
+], $form_data);

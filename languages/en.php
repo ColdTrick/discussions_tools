@@ -28,7 +28,7 @@ return [
 	'discussions_tools:widgets:discussion:more' => "View more discussions",
 	
 	// latest discussions (group)
-	'discussions_tools:widgets:group_forum_topics:description' => "Show the latest discussions",
+	'widgets:group_forum_topics:description' => "Show the latest discussions",
 	
 	// actions
 	// discussion toggle status

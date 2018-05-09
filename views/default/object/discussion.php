@@ -2,134 +2,98 @@
 /**
  * Forum topic entity view
  *
+ * @uses $vars['entity'] ElggDiscussion to show
+ *
  * ColdTrick
  * - added icon before title to show discussion status (closed)
- * - removed duplicate title in full view
  */
 
-$full = elgg_extract('full_view', $vars, FALSE);
-$topic = elgg_extract('entity', $vars, FALSE);
-
-if (!$topic) {
+$full_view = (bool) elgg_extract('full_view', $vars, false);
+$entity = elgg_extract('entity', $vars, false);
+if (!$entity instanceof ElggDiscussion) {
 	return;
 }
 
-$poster = $topic->getOwnerEntity();
-if (!$poster) {
-	elgg_log("User {$topic->owner_guid} could not be loaded, and is needed to display entity {$topic->guid}", 'WARNING');
-	if ($full) {
+$poster = $entity->getOwnerEntity();
+if (!$poster instanceof ElggEntity) {
+	elgg_log("User {$entity->owner_guid} could not be loaded, and is needed to display entity {$entity->guid}", 'WARNING');
+	if ($full_view) {
 		forward('', '404');
 	}
 	return;
 }
 
-$excerpt = elgg_get_excerpt($topic->description);
-
-$poster_icon = elgg_view_entity_icon($poster, 'tiny');
-
-$by_line = elgg_view('page/elements/by_line', $vars);
-
-$tags = elgg_view('output/tags', array('tags' => $topic->tags));
-
-$replies_link = '';
-$reply_text = '';
-
-$num_replies = elgg_get_entities(array(
-	'type' => 'object',
-	'subtype' => 'discussion_reply',
-	'container_guid' => $topic->getGUID(),
-	'count' => true,
-	'distinct' => false,
-));
-
-if ($num_replies != 0) {
-	$last_reply = elgg_get_entities(array(
-		'type' => 'object',
-		'subtype' => 'discussion_reply',
-		'container_guid' => $topic->getGUID(),
-		'limit' => 1,
-		'distinct' => false,
-	));
-	if (isset($last_reply[0])) {
-		$last_reply = $last_reply[0];
-	}
-
-	$poster = $last_reply->getOwnerEntity();
-	$reply_time = elgg_view_friendly_time($last_reply->time_created);
-	$reply_text = elgg_echo('discussion:updated', array($poster->name, $reply_time));
-
-	$replies_link = elgg_view('output/url', array(
-		'href' => $topic->getURL() . '#group-replies',
-		'text' => elgg_echo('discussion:replies') . " ($num_replies)",
-		'is_trusted' => true,
-	));
-}
-
-// do not show the metadata and controls in widget view
-$metadata = '';
-if (!elgg_in_context('widgets')) {
-	// only show entity menu outside of widgets
-	$metadata = elgg_view_menu('entity', array(
-		'entity' => $vars['entity'],
-		'handler' => 'discussion',
-		'sort_by' => 'priority',
-		'class' => 'elgg-menu-hz',
-	));
-}
-
-if ($full) {
-	$subtitle = "$by_line $replies_link";
-
-	$params = array(
-		'entity' => $topic,
-		'title' => false,
-		'metadata' => $metadata,
-		'subtitle' => $subtitle,
-		'tags' => $tags,
-	);
-	$params = $params + $vars;
-	$list_body = elgg_view('object/elements/summary', $params);
-
-	$info = elgg_view_image_block($poster_icon, $list_body);
-
-	$body = elgg_view('output/longtext', array(
-		'value' => $topic->description,
+if ($full_view) {
+	$body = elgg_view('output/longtext', [
+		'value' => $entity->description,
 		'class' => 'clearfix',
-	));
+	]);
 
-	echo <<<HTML
-$info
-$body
-HTML;
-
-} else {
-	// show status indicator
-	$title = '';
-	if ($topic->status == 'closed') {
-		$title .= elgg_format_element('span', [
-			'title' => elgg_echo('discussion:topic:closed:title'),
-			'class' => 'mrs',
-		], elgg_view_icon('lock-closed'));
+	$responses = null;
+	if ($entity->status == 'closed') {
+		$body .= elgg_view('discussion/closed');
+		
+		// need to provide the comments as we can't disable the add form
+		$responses = elgg_view_comments($entity, false);
 	}
-	$title .= elgg_view('output/url', [
-		'text' => $topic->title,
-		'href' => $topic->getURL(),
+	
+	$params = [
+		'icon' => true,
+		'show_summary' => true,
+		'body' => $body,
+		'responses' => $responses,
+		'show_navigation' => true,
+	];
+
+	$params = $params + $vars;
+	echo elgg_view('object/elements/full', $params);
+} else {
+	// title
+	// add status indicator
+	$title = elgg_view('output/url', [
+		'text' => $entity->getDisplayName(),
+		'href' => $entity->getURL(),
 		'is_trusted' => true,
+		'icon' => ($entity->status === 'closed') ? 'lock-closed' : null,
+		'title' => ($entity->status === 'closed') ? elgg_echo('discussion:topic:closed:title') : null,
 	]);
 	
+	// byline
+	$comment_text = '';
+	if ($entity->countComments() > 0) {
+		$comments = elgg_get_entities([
+			'type' => 'object',
+			'subtype' => 'comment',
+			'container_guid' => $entity->guid,
+			'limit' => 1,
+			'distinct' => false,
+		]);
+		
+		/* @var ElggComment $last_comment */
+		$last_comment = $comments[0];
+		
+		$poster = $last_comment->getOwnerEntity();
+		$comment_time = elgg_view_friendly_time($last_comment->time_created);
+		
+		$comment_text = elgg_view('output/url', [
+			'text' => elgg_echo('discussion:updated', [$poster->getDisplayName(), $comment_time]),
+			'href' => $last_comment->getURL(),
+			'is_trusted' => true,
+		]);
+		$comment_text = elgg_format_element('span', ['class' => 'float-alt'], $comment_text);
+	}
+	
 	// brief view
-	$subtitle = "$by_line $replies_link <span class=\"float-alt\">$reply_text</span>";
+	$by_line = elgg_view('object/elements/imprint', $vars);
+	
+	$subtitle = "$by_line $comment_text";
 
-	$params = array(
-		'entity' => $topic,
+	$params = [
 		'title' => $title,
-		'metadata' => $metadata,
 		'subtitle' => $subtitle,
-		'tags' => $tags,
-		'content' => $excerpt,
-	);
+		'content' => elgg_get_excerpt($entity->description),
+		'icon' => true,
+	];
 	$params = $params + $vars;
-	$list_body = elgg_view('object/elements/summary', $params);
-
-	echo elgg_view_image_block($poster_icon, $list_body);
+	echo elgg_view('object/elements/summary', $params);
 }

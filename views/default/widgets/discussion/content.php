@@ -3,9 +3,10 @@
  * content of the discussions widget
  */
 
+/* @var $widget ElggWidget */
 $widget = elgg_extract('entity', $vars);
 
-$discussion_count = sanitise_int($widget->discussion_count, false);
+$discussion_count = (int) $widget->discussion_count;
 if ($discussion_count < 1) {
 	$discussion_count = 5;
 }
@@ -39,7 +40,7 @@ if (empty($content)) {
 } else {
 	$content .= elgg_format_element('div', ['class' => 'elgg-widget-more'], elgg_view('output/url', [
 		'text' => elgg_echo('discussions_tools:widgets:discussion:more'),
-		'href' => 'discussion/all',
+		'href' => elgg_generate_url('collection:object:discussion:all'),
 		'is_trusted' => true,
 	]));
 }

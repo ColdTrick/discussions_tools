@@ -1,4 +1,7 @@
-define(['jquery', 'elgg'], function ($, elgg) {
+define(function (require) {
+	
+	var $ = require('jquery');
+	var elgg = require('elgg');
 	
 	$(document).on('submit', '#discussions-tools-start-discussion-widget-form', function () {
 		var selected_group = $('#discussions-tools-discussion-quick-start-group').val();
