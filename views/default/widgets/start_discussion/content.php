@@ -86,7 +86,6 @@ if ((empty($selected_group) && (count($group_selection_options) === 1)) || (!emp
 natcasesort($group_selection_options);
 
 $form_vars = [
-	'id' => 'discussions-tools-start-discussion-widget-form',
 	'action' => elgg_generate_action_url('discussion/save', [], false),
 ];
 $body_vars = [

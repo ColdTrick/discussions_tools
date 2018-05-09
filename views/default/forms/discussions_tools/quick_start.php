@@ -4,12 +4,7 @@ $group_selection_options = elgg_extract('groups', $vars);
 $group_access_options = elgg_extract('access', $vars);
 $selected_group = elgg_extract('container_guid', $vars, ELGG_ENTITIES_ANY_VALUE);
 
-global $quick_start_form_count;
-if (empty($quick_start_form_count)) {
-	$quick_start_form_count = 1;
-} else {
-	$quick_start_form_count++;
-}
+$wrapper_id = uniqid();
 
 elgg_require_js('discussions_tools/start_discussion');
 
@@ -17,9 +12,9 @@ elgg_require_js('discussions_tools/start_discussion');
 echo elgg_view('output/url', [
 	'text' => elgg_echo('add:object:discussion'),
 	'icon' => 'plus',
-	'href' => "#discussions-tools-discussion-quick-start-wrapper-{$quick_start_form_count}",
-	'is_trusted' => true,
+	'href' => false,
 	'rel' => 'toggle',
+	'data-toggle-selector' => "#discussions-tools-discussion-quick-start-wrapper-{$wrapper_id}",
 	'class' => 'elgg-button elgg-button-action',
 ]);
 
@@ -82,6 +77,6 @@ $form_data .= elgg_format_element('div', ['class' => 'elgg-foot elgg-form-footer
 
 // render wrapper
 echo elgg_format_element('div', [
-	'id' => "discussions-tools-discussion-quick-start-wrapper-{$quick_start_form_count}",
+	'id' => "discussions-tools-discussion-quick-start-wrapper-{$wrapper_id}",
 	'class' => 'hidden',
 ], $form_data);
