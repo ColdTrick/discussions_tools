@@ -15,7 +15,7 @@ elgg_require_js('discussions_tools/start_discussion');
 
 // show a button to expend the form
 echo elgg_view('output/url', [
-	'text' => elgg_echo('discussion:add'),
+	'text' => elgg_echo('add:object:discussion'),
 	'icon' => 'plus',
 	'href' => "#discussions-tools-discussion-quick-start-wrapper-{$quick_start_form_count}",
 	'is_trusted' => true,
@@ -33,6 +33,7 @@ $form_data .= elgg_view_field([
 	'name' => 'container_guid',
 	'options_values' => $group_selection_options,
 	'value' => $selected_group,
+	'required' => true,
 ]);
 
 // hidden group access selector

@@ -48,7 +48,7 @@ $group_access_options = [];
 
 if (empty($selected_group)) {
 	// no group container, so add empty record, so a user is required to select a group (instead of defaulting to the first option)
-	$group_selection_options[] = '';
+	$group_selection_options[''] = elgg_echo('discussions_tools:forms:discussion:quick_start:group:required');
 	$group_access_options['-1'] = '';
 }
 
@@ -60,8 +60,16 @@ foreach ($group_membership as $group) {
 		continue;
 	}
 	
+	$group_acl = $group->getOwnedAccessCollection('group_acl');
+	if (empty($group_acl)) {
+		continue;
+	}
+	
 	$group_selection_options[$group->guid] = $group->getDisplayName();
-	$group_access_options[$group->group_acl] = $group->guid;
+	$group_access_options[] = [
+		'text' => $group->guid,
+		'value' => $group_acl->id,
+	];
 }
 
 if ((empty($selected_group) && (count($group_selection_options) === 1)) || (!empty($selected_group) && empty($group_selection_options))) {
