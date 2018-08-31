@@ -3,6 +3,8 @@
  * content of the discussions widget
  */
 
+use Elgg\Database\Clauses\OrderByClause;
+
 /* @var $widget ElggWidget */
 $widget = elgg_extract('entity', $vars);
 
@@ -15,7 +17,7 @@ $options = [
 	'type' => 'object',
 	'subtype' => 'discussion',
 	'limit' => $discussion_count,
-	'order_by' => 'e.last_action desc',
+	'order_by' => new OrderByClause('e.last_action', 'desc'),
 	'pagination' => false,
 	'full_view' => false,
 ];
