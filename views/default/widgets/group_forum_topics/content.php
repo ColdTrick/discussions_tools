@@ -14,23 +14,15 @@ if ($topic_count < 1) {
 	$topic_count = 4;
 }
 
-$options = [
+// show discussion listing
+$content = elgg_list_entities([
 	'type' => 'object',
 	'subtype' => 'discussion',
 	'container_guid' => $group->guid,
 	'order_by' => new OrderByClause('e.last_action', 'desc'),
 	'limit' => $topic_count,
-	'full_view' => false,
 	'pagination' => false,
-];
-
-// prepend a quick start form
-$params = $vars;
-$params['embed'] = true;
-echo elgg_view('widgets/start_discussion/content', $params);
-
-// show discussion listing
-$content = elgg_list_entities($options);
+]);
 if (empty($content)) {
 	$content = elgg_echo('discussion:none');
 } else {

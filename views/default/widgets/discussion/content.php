@@ -19,7 +19,6 @@ $options = [
 	'limit' => $discussion_count,
 	'order_by' => new OrderByClause('e.last_action', 'desc'),
 	'pagination' => false,
-	'full_view' => false,
 ];
 
 if ($widget->group_only == 'yes') {
@@ -46,11 +45,6 @@ if (empty($content)) {
 		'is_trusted' => true,
 	]));
 }
-
-// prepend a quick start form
-$params = $vars;
-$params['embed'] = true;
-echo elgg_view('widgets/start_discussion/content', $params);
 
 // view listing of discussions
 echo $content;
