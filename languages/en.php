@@ -28,6 +28,7 @@ return [
 	'discussions_tools:widgets:discussion:more' => "View more discussions",
 	
 	// latest discussions (group)
+	'widgets:group_forum_topics:name' => "Discussions",
 	'widgets:group_forum_topics:description' => "Show the latest discussions",
 	
 	// actions

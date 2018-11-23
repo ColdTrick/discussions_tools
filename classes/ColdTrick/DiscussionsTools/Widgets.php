@@ -29,8 +29,6 @@ class Widgets {
 		
 		$return_value[] = WidgetDefinition::factory([
 			'id' => 'group_forum_topics',
-			'name' => elgg_echo('discussion:group'),
-			'description' => elgg_echo('widgets:group_forum_topics:description'),
 			'context' => ['groups'],
 		]);
 		
