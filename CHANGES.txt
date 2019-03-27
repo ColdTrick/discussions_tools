@@ -1,6 +1,16 @@
 Version history
 ===============
 
+4.0 (2019-03-27):
+
+- changed: increased minimal Elgg version to 3.0
+- changed: moved action registration to elgg-plugin
+- changed: moved plugin hook registration to Bootstrap class
+- changed: moved widget registration to elgg-plugin
+- changed: no longer add discussion start form to list widgets
+- changed: rewrite for Elgg 3.0
+- removed: core view overrule, no longer needed
+
 3.0.1 (2017-02-27):
 
 - changed: registration of group_form_topics widget now in hook
