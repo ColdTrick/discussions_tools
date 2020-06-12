@@ -6,6 +6,7 @@ return [
 	'bootstrap' => Bootstrap::class,
 	'actions' => [
 		'discussions/toggle_status' => [],
+		'discussions_tools/groups/edit' => [],
 	],
 	'widgets' => [
 		'start_discussion' => [

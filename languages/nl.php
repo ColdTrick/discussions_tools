@@ -23,4 +23,5 @@ return array (
   'discussions_tools:widgets:discussion:more' => 'Toon meer discussies',
   'discussions_tools:action:discussions:toggle_status:success:open' => 'De discussie is heropenend',
   'discussions_tools:action:discussions:toggle_status:success:close' => 'De discussie is gesloten',
+  'discussions_tools:groups:edit:enable_discussion_comment_notifications' => "Groepsleden ontvangen notificaties van reacties op discussies",
 );

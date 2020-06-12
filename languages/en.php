@@ -21,6 +21,9 @@ return [
 	'discussions_tools:forms:discussion:quick_start:group' => "Select a group for this discussion",
 	'discussions_tools:forms:discussion:quick_start:group:required' => "Please select a group",
 	
+	// groups setting
+	'discussions_tools:groups:edit:enable_discussion_comment_notifications' => "Send group members notifications about discussion replies",
+	
 	// latest discussions (index, dashboard)
 	'widgets:discussion:name' => "Latest discussions",
 	'widgets:discussion:description' => "Shows the latest discussions",
