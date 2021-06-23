@@ -21,16 +21,19 @@ $options = [
 	'pagination' => false,
 ];
 
-if ($widget->group_only == 'yes') {
+if ($widget->group_only === 'yes') {
 	$owner = $widget->getOwnerEntity();
-	$groups = $owner->getGroups(['limit' => false]);
+	$groups = $owner->getGroups([
+		'limit' => false,
+		'batch' => true,
+	]);
 	
-	if (!empty($groups)) {
-		
-		$group_guids = [];
-		foreach ($groups as $group) {
-			$group_guids[] = $group->getGUID();
-		}
+	$group_guids = [];
+	foreach ($groups as $group) {
+		$group_guids[] = $group->guid;
+	}
+	
+	if (!empty($group_guids)) {
 		$options['container_guids'] = $group_guids;
 	}
 }

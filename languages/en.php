@@ -5,10 +5,6 @@ return [
 	// group tool option descriptions
 	'forum:group_tool_option:description' => "Allow the group members to start a discussion in a simple forum format.",
 
-	// discussion status
-	'discussions_tools:discussion:confirm:open' => "Are you sure you wish to reopen this topic?",
-	'discussions_tools:discussion:confirm:close' => "Are you sure you wish to close this topic?",
-	
 	// widgets
 	// quick start discussion
 	'widgets:start_discussion:name' => "Start a discussion",
@@ -34,8 +30,7 @@ return [
 	'widgets:group_forum_topics:name' => "Discussions",
 	'widgets:group_forum_topics:description' => "Show the latest discussions",
 	
-	// actions
-	// discussion toggle status
-	'discussions_tools:action:discussions:toggle_status:success:open' => "The topic was successfully reopened",
-	'discussions_tools:action:discussions:toggle_status:success:close' => "The topic was successfully closed",
+	// Upgrades
+	'discussions_tools:upgrade:2021062301:title' => "Migrate group discussion notification settings",
+	'discussions_tools:upgrade:2021062301:description' => "The discussion notification settings need to be stored in a new location",
 ];

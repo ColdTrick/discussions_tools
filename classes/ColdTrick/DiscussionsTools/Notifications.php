@@ -37,34 +37,10 @@ class Notifications {
 			return;
 		}
 		
-		if ($container->getPrivateSetting('enable_discussion_comment_notifications') === '0') {
+		if (!(bool) $container->getPluginSetting('discussions_tools', 'enable_discussion_comment_notifications', true)) {
 			return;
 		}
 		
-		return discussion_get_subscriptions($hook);
-	}
-	
-	/**
-	 * Check the content subscription logic for discussions
-	 *
-	 * @param \Elgg\Hook $hook 'check_discussions_subscription', 'content_subscriptions'
-	 *
-	 * @return void|array
-	 */
-	public static function checkDiscussionsNotificationsLogic(\Elgg\Hook $hook) {
-		
-		$discussion = $hook->getEntityParam();
-		if (!$discussion instanceof \ElggDiscussion) {
-			return;
-		}
-		
-		$group = $discussion->getContainerEntity();
-		if (!$group instanceof \ElggGroup) {
-			return;
-		}
-		
-		if ($group->getPrivateSetting('enable_discussion_comment_notifications') === '0') {
-			return false;
-		}
+		return \Elgg\Discussions\Notifications::addGroupSubscribersToCommentOnDiscussionSubscriptions($hook);
 	}
 }

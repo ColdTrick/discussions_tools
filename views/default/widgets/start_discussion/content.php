@@ -20,8 +20,12 @@ if (empty($user)) {
 }
 
 // check if member of a group
-$group_membership = $user->getGroups(['limit' => false]);
-if (empty($group_membership)) {
+/* @var $group_membership \ElggBatch */
+$group_membership = $user->getGroups([
+	'limit' => false,
+	'batch' => true,
+]);
+if (empty($group_membership->count())) {
 	if (!$embed) {
 		// you must join a group in order to use this widget
 		$url = elgg_generate_url('collection:group:group:all');
@@ -46,12 +50,6 @@ if ($owner instanceof ElggGroup && $owner->isToolEnabled('forum')) {
 $group_selection_options = [];
 $group_access_options = [];
 
-if (empty($selected_group)) {
-	// no group container, so add empty record, so a user is required to select a group (instead of defaulting to the first option)
-	$group_selection_options[''] = elgg_echo('discussions_tools:forms:discussion:quick_start:group:required');
-	$group_access_options['-1'] = '';
-}
-
 /* @var $group ElggGroup */
 foreach ($group_membership as $group) {
 	
@@ -72,7 +70,7 @@ foreach ($group_membership as $group) {
 	];
 }
 
-if ((empty($selected_group) && (count($group_selection_options) === 1)) || (!empty($selected_group) && empty($group_selection_options))) {
+if (empty($group_selection_options)) {
 	// non of your groups have discussions enabled
 	if (!$embed) {
 		echo elgg_view('output/longtext', [
@@ -84,6 +82,12 @@ if ((empty($selected_group) && (count($group_selection_options) === 1)) || (!emp
 
 // sort the groups by name
 natcasesort($group_selection_options);
+
+if (empty($selected_group)) {
+	// no group container, so add empty record, so a user is required to select a group (instead of defaulting to the first option)
+	$group_selection_options = ['' => elgg_echo('discussions_tools:forms:discussion:quick_start:group:required')] + $group_selection_options;
+	$group_access_options['-1'] = '';
+}
 
 $form_vars = [
 	'action' => elgg_generate_action_url('discussion/save', [], false),
