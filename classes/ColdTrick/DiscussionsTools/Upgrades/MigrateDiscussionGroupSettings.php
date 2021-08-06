@@ -46,10 +46,10 @@ class MigrateDiscussionGroupSettings implements AsynchronousUpgrade {
 		
 		/* @var $group \ElggGroup */
 		foreach ($groups as $group) {
-			$result = $group->setPluginSetting('discussions_tools', 'enable_discussion_comment_notifications', (bool) $group->getPrivateSetting('enable_discussion_comment_notifications'));
-			$result &= $group->removePrivateSetting('enable_discussion_comment_notifications');
+			$group_result = $group->setPluginSetting('discussions_tools', 'enable_discussion_comment_notifications', (bool) $group->getPrivateSetting('enable_discussion_comment_notifications'));
+			$group_result &= $group->removePrivateSetting('enable_discussion_comment_notifications');
 			
-			if ($result) {
+			if ($group_result) {
 				$result->addSuccesses();
 			} else {
 				$result->addFailures();
