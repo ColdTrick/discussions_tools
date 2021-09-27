@@ -4,7 +4,7 @@ use ColdTrick\DiscussionsTools\Upgrades\MigrateDiscussionGroupSettings;
 
 return [
 	'plugin' => [
-		'version' => '4.2',
+		'version' => '5.0',
 		'dependencies' => [
 			'discussions' => [
 				'position' => 'after',
